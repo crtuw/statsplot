@@ -9,37 +9,52 @@ class StatsSampleArtist(object):
     def __init__(self,
                  ax = None,
                  sample = None,
-                 kwargs_plot_sample: dict = None):
+                 kwargs_swarmplot: dict = None,
+                 label = None):
         '''
         Creates a distribution function artist on a stage.
     
                 Parameters:
                         ax                     (obj):      An axes from - see matplotlib.pyplot.axes          
-                        dist                   (obj):      A parametrized continuos distribution - see scipy.stats
-                        distfun                (str):      A reference to a distribution function - see scipy.stats.pdf
-                        kwargs_plot_distfun    (dict):     Parameters for plotting the distribution function - see plot_distfun
+                        sample                 (obj):      A sample
+                        kwargs_swarmplot       (dict):     Parameters for plotting the distribution function - see plot_distfun
+                        label                  (str):      A label for the sample
         '''
         _, self.ax = (None, ax) if ax is not None else subplots()
         self.sample = sample if sample is not None else norm().rvs(10)
-        self.kwargs_plot_sample= kwargs_plot_sample if kwargs_plot_sample is not None else dict()
-
-    def plot_sample(self,
-                    kwargs_plot_sample:    dict = None):
+        self.kwargs_swarmplot = kwargs_swarmplot if kwargs_swarmplot is not None else dict()
+        self.label = label if label is not None else "Sample"
+        
+    def plot_sample(self):
         '''
         Plots a distribution function between a lower and upper percent point
     
-                Parameters:
-                        distfun2poly      (Callable): A function that maps the distribution to a polygon - see distfun2poly
-                        kwargs_fun2poly   (dict):     Arguments passed on to the fill2poly - see fill2poly
-                        kwargs_linestyle  (dict):     Arguments passed on to the lineplot - see seaborn.lineplot
-                        kwargs_fillstyle  (dict):     Arguments passed on to the fill_between - see matplotlib.pyplot.fill_between
-                        
-                Returns:
-                        The created plot objects
+                Parameters: <empty on purpose>
+
+                Returns: None
         ''' 
-        kwargs_plot_sample    = kwargs_plot_sample    if kwargs_plot_sample    is not None else dict()
+        kwargs_swarmplot = self.kwargs_swarmplot
 
         ax = self.ax
         sample = self.sample
+        label = self.label
 
-        swarmplot(ax=ax, x=sample)  
+        hue = [label]*len(sample)
+        
+        swarmplot(ax=ax, x=sample, hue=hue, **kwargs_swarmplot) 
+        
+    def add_labels(self):
+        self.add_xlabel()
+        self.add_ylabel()
+
+    def add_xlabel(self):
+        ax = self.ax
+        ax.set_xlabel('Random variable')
+
+    def add_ylabel(self):
+        ax = self.ax
+        ax.set_xlabel('Jitter')
+
+
+    def add_legend(self):
+        pass

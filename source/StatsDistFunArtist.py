@@ -5,14 +5,21 @@ from seaborn import lineplot
 from scipy.stats import norm
 
 class StatsDistFunArtist(object):
+
+
+    distfunkind_to_ylabel = {"pdf": "Probability density",
+                             "cdf": "Lower tail probability"}
+    distfunkind_to_label = {"pdf": "Probability density function",
+                            "cdf": "Cumulative distribution function"}
     
     def __init__(self,
                  ax = None,
                  dist = None,
-                 distfun: Literal["pdf","cdf"] = "pdf",
+                 distfunkind: Literal["pdf","cdf"] = "pdf",
                  kwargs_distfun2poly: dict = None,
                  kwargs_linestyle: dict = None,
-                 kwargs_fillstyle: dict = None):
+                 kwargs_fillstyle: dict = None,
+                 label = None):
         '''
         Creates a distribution function artist on a stage.
     
@@ -26,60 +33,57 @@ class StatsDistFunArtist(object):
         '''
         _, self.ax = (None, ax) if ax is not None else subplots()
         self.dist = dist if dist is not None else norm()
-        self.distfun = distfun
+        self.distfunkind = distfunkind
         
-        self.kwargs_fun2poly  = kwargs_fun2poly  if kwargs_fun2poly  is not None else dict()
+        self.kwargs_distfun2poly  = kwargs_distfun2poly  if kwargs_distfun2poly  is not None else dict()
         self.kwargs_linestyle = kwargs_linestyle if kwargs_linestyle is not None else dict()
         self.kwargs_fillstyle = kwargs_fillstyle if kwargs_fillstyle is not None else dict()
 
-    def plot_distfun(self,
-                     distfun2poly = None,
-                     kwargs_distfun2poly: dict = None,
-                     kwargs_linestyle:    dict = None,
-                     kwargs_fillstyle:    dict = None):
+        self.label = label if label is not None else StatsDistFunArtist.distfunkind_to_label[distfunkind]
+        
+    def plot_distfun(self):
         '''
         Plots a distribution function between a lower and upper percent point
     
                 Parameters:
-                        distfun2poly      (Callable): A function that maps the distribution to a polygon - see distfun2poly
-                        kwargs_fun2poly   (dict):     Arguments passed on to the fill2poly - see fill2poly
-                        kwargs_linestyle  (dict):     Arguments passed on to the lineplot - see seaborn.lineplot
-                        kwargs_fillstyle  (dict):     Arguments passed on to the fill_between - see matplotlib.pyplot.fill_between
                         
                 Returns:
                         The created plot objects
         ''' 
-        # Process passed parameters
-        _distfun2poly = distfun2poly if distfun2poly is not None \
-                                     else StatsDistFunArtist.distfun2poly
-
-        kwargs_distfun2poly = kwargs_distfun2poly if kwargs_distfun2poly is not None else dict()
-        kwargs_linestyle = kwargs_linestyle if kwargs_linestyle is not None else dict()
-        kwargs_fillstyle = kwargs_fillstyle if kwargs_fillstyle is not None else dict()
+        # Get parameters from instance       
+        ax = self.ax
+        dist = self.dist
+        distfunkind = self.distfunkind
         
-        # Get parameters from object       
-        _ax = self.ax
-        _dist = self.dist
-        _distfun = self.distfun
-        _kwargs_distfun2poly = self.kwargs_distfun2poly
-        _kwargs_linestyle = self.kwargs_linestyle        
-        _kwargs_fillstyle = self.kwargs_fillstyle        
+        kwargs_distfun2poly = self.kwargs_distfun2poly
+        kwargs_linestyle    = self.kwargs_linestyle        
+        kwargs_fillstyle    = self.kwargs_fillstyle        
 
-        # Update with passed parameters
-        _kwargs_distfun2poly.update(kwargs_distfun2poly)
-        _kwargs_linestyle.update(kwargs_linestyle)
-        _kwargs_fillstyle.update(kwargs_fillstyle)
-
+        label = self.label
+        
         # Calculate the polygon
-        _x, _y = distfun2poly(_dist, _distfun, **_kwargs_distfun2poly)
+        x, y = StatsDistFunArtist.distfun2poly(dist, distfunkind, **kwargs_distfun2poly)
 
         # Plot
-        lineplot(ax=ax, x=_x, y=_y, **_kwargs_linestyle)
-        ax.fill_between(x=_x, y1=y, **_kwargs_fillstyle)  
+        lineplot(ax=ax, x=x, y=y, **kwargs_linestyle, label=label)
+        ax.fill_between(x=x, y1=y, **kwargs_fillstyle)  
 
+    def add_labels(self):
+        self.add_xlabel()
+        self.add_ylabel()
+
+    def add_xlabel(self):
+        ax = self.ax
+        ax.set_xlabel('Random variable')
+
+    def add_ylabel(self):
+        ax = self.ax
+        distfunkind = self.distfunkind
+        ax.set_ylabel(StatsDistFunArtist.distfunkind_to_ylabel[distfunkind])
+    
     @staticmethod
     def distfun2poly(dist,
-                     distfuntype: Literal["pdf","cdf"] = 'pdf', 
+                     distfunkind: Literal["pdf","cdf"] = 'pdf', 
                      *,
                      ll: float = 0.05, 
                      ul: float = 0.95,
@@ -91,7 +95,7 @@ class StatsDistFunArtist(object):
             Parameters:
                     dist ():            A distribution
                     
-                    distfuntype (str):  Distribution function chosen from 
+                    distfunkind (str):  Distribution function chosen from 
                                              "pdf": The probability distribution function
                                              "cdf": The cumulative distribution function
                                         
@@ -116,8 +120,8 @@ class StatsDistFunArtist(object):
     
         x = linspace(xll,xul,100)
 
-        if distfuntype == "pdf": distfun = dist.pdf
-        if distfuntype == "cdf": distfun = dist.cdf
+        if distfunkind == "pdf": distfun = dist.pdf
+        if distfunkind == "cdf": distfun = dist.cdf
                 
         y = distfun(x)
         return x, y

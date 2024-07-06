@@ -19,5 +19,5 @@ class StatsDistSampleDashboard(object):
         kwargs_plot_dist   = kwargs_plot_dist   if kwargs_plot_dist   is not None else dict()
         kwargs_plot_sample = kwargs_plot_sample if kwargs_plot_sample is not None else dict()
         
-        self.statsDistFunArtist.plot_distfun(**kwargs_plot_dist)
-        self.statsSampleArtist.plot_sample(**kwargs_plot_sample)
+        self.statsDistFunArtist.plot_distfun()
+        self.statsSampleArtist.plot_sample()
