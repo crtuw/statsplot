@@ -79,7 +79,7 @@ class StatsDistFunArtist(object):
 
     @staticmethod
     def distfun2poly(dist,
-                     distfun: Literal["pdf","cdf"] = 'pdf', 
+                     distfuntype: Literal["pdf","cdf"] = 'pdf', 
                      *,
                      ll: float = 0.05, 
                      ul: float = 0.95,
@@ -89,23 +89,23 @@ class StatsDistFunArtist(object):
         Renders a distribution function.
         
             Parameters:
-                    dist ():        A distribution
+                    dist ():            A distribution
                     
-                    distfun (str):  Distribution function chosen from 
-                                        "pdf": The probability distribution function
-                                        "cdf": The cumulative distribution function
+                    distfuntype (str):  Distribution function chosen from 
+                                             "pdf": The probability distribution function
+                                             "cdf": The cumulative distribution function
                                         
-                    ll (float):     Lower limit (default = 0.05)
-                    
-                    ul (float):     Upper limit (default = 0.95)
-                    
-                    lref:           Lower reference (default = 'lbtp')
-                                          "lbtp": Lower bound from tail probability
-                                          "lbvv": Lower bound from (random) variable value
-                                          
-                    uref:           Upper reference (default = 'ubtp')
-                                          "ubtp": Upper bound from tail probability
-                                          "ubvv": Upper bound from (random) variable value
+                    ll (float):         Lower limit (default = 0.05)
+                        
+                    ul (float):         Upper limit (default = 0.95)
+                        
+                    lref:               Lower reference (default = 'lbtp')
+                                              "lbtp": Lower bound from tail probability
+                                              "lbvv": Lower bound from (random) variable value
+                                              
+                    uref:               Upper reference (default = 'ubtp')
+                                              "ubtp": Upper bound from tail probability
+                                              "ubvv": Upper bound from (random) variable value
                                           
             Returns:
                     x, y
@@ -116,11 +116,8 @@ class StatsDistFunArtist(object):
     
         x = linspace(xll,xul,100)
 
-        match distfun:
-            case "pdf":
-                distfun = dist.pdf
-            case "cdf":
-                distfun = dist.cdf
+        if distfuntype == "pdf": distfun = dist.pdf
+        if distfuntype == "cdf": distfun = dist.cdf
                 
         y = distfun(x)
         return x, y
