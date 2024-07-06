@@ -1,0 +1,13 @@
+name: blog_material-statistics
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - fps-auth
+  - fps-jupyterlab
+  - jupyverse
+  - plotly
+  - pandas
+  - scipy
+  - dash
+  - seaborn
