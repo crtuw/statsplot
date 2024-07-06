@@ -9,15 +9,22 @@ class StatsDistSampleDashboard(object):
                  statsDistFunArtist = None,
                  statsSampleArtist = None):
 
-        _, self.ax = (None, ax) if ax is not None else subplots(2,1)
-        self.statsDistFunArtist = statsDistFunArtist if statsDistFunArtist is not None else StatsDistFunArtist(ax = self.ax[0])
-        self.statsSampleArtist = statsSampleArtist if statsSampleArtist is not None else StatsSampleArtist(ax = self.ax[1])
+        self.ax = ax
 
-    def plot_all(self, kwargs_plot_dist = None,
-                       kwargs_plot_sample = None):
+        self.statsDistFunArtist = statsDistFunArtist if statsDistFunArtist is not None else StatsDistFunArtist(ax = ax[0] if ax is not None else None)
+        self.statsSampleArtist = statsSampleArtist if statsSampleArtist is not None else StatsSampleArtist(ax = ax[1] if ax is not None else None)
+
+    def set_stage(self):
+        _, ax = subplots(2,1)
+        self.ax = ax
+        return ax
         
-        kwargs_plot_dist   = kwargs_plot_dist   if kwargs_plot_dist   is not None else dict()
-        kwargs_plot_sample = kwargs_plot_sample if kwargs_plot_sample is not None else dict()
+    def plot_all(self):
+        # Check for stage
+        ax = self.ax if self.ax is not None else self.set_stage()
+
+        self.statsDistFunArtist.ax = ax[0]
+        self.statsSampleArtist.ax = ax[1]
         
         self.statsDistFunArtist.plot_distfun()
         self.statsSampleArtist.plot_sample()

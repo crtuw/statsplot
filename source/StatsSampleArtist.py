@@ -20,10 +20,15 @@ class StatsSampleArtist(object):
                         kwargs_swarmplot       (dict):     Parameters for plotting the distribution function - see plot_distfun
                         label                  (str):      A label for the sample
         '''
-        _, self.ax = (None, ax) if ax is not None else subplots()
+        self.ax = ax
         self.sample = sample if sample is not None else norm().rvs(10)
         self.kwargs_swarmplot = kwargs_swarmplot if kwargs_swarmplot is not None else dict()
         self.label = label if label is not None else "Sample"
+
+    def set_stage(self):
+        _, ax = subplots(1,1)
+        self.ax = ax
+        return ax
         
     def plot_sample(self):
         '''
@@ -35,7 +40,7 @@ class StatsSampleArtist(object):
         ''' 
         kwargs_swarmplot = self.kwargs_swarmplot
 
-        ax = self.ax
+        ax = self.ax if self.ax is not None else self.set_stage()
         sample = self.sample
         label = self.label
 
@@ -48,11 +53,11 @@ class StatsSampleArtist(object):
         self.add_ylabel()
 
     def add_xlabel(self):
-        ax = self.ax
+        ax = self.ax if self.ax is not None else self.set_stage()
         ax.set_xlabel('Random variable')
 
     def add_ylabel(self):
-        ax = self.ax
+        ax = self.ax if self.ax is not None else self.set_stage()
         ax.set_xlabel('Jitter')
 
 

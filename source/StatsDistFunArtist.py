@@ -31,7 +31,7 @@ class StatsDistFunArtist(object):
                         kwargs_linestyle  (dict):     Arguments passed on to the lineplot - see seaborn.lineplot
                         kwargs_fillstyle  (dict):     Arguments passed on to the fill_between - see matplotlib.pyplot.fill_between
         '''
-        _, self.ax = (None, ax) if ax is not None else subplots()
+        self.ax = ax
         self.dist = dist if dist is not None else norm()
         self.distfunkind = distfunkind
         
@@ -40,7 +40,13 @@ class StatsDistFunArtist(object):
         self.kwargs_fillstyle = kwargs_fillstyle if kwargs_fillstyle is not None else dict()
 
         self.label = label if label is not None else StatsDistFunArtist.distfunkind_to_label[distfunkind]
-        
+
+
+    def set_stage(self):
+        _, ax = subplots(1,1)
+        self.ax = ax
+        return ax
+    
     def plot_distfun(self):
         '''
         Plots a distribution function between a lower and upper percent point
@@ -51,7 +57,8 @@ class StatsDistFunArtist(object):
                         The created plot objects
         ''' 
         # Get parameters from instance       
-        ax = self.ax
+        ax = self.ax if self.ax is not None else self.set_stage()
+        
         dist = self.dist
         distfunkind = self.distfunkind
         
@@ -73,11 +80,11 @@ class StatsDistFunArtist(object):
         self.add_ylabel()
 
     def add_xlabel(self):
-        ax = self.ax
+        ax = self.ax if self.ax is not None else self.set_stage()
         ax.set_xlabel('Random variable')
 
     def add_ylabel(self):
-        ax = self.ax
+        ax = self.ax if self.ax is not None else self.set_stage()
         distfunkind = self.distfunkind
         ax.set_ylabel(StatsDistFunArtist.distfunkind_to_ylabel[distfunkind])
     
