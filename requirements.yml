@@ -1,4 +1,4 @@
-name: blog_material-statistics
+name: statsplot
 channels:
   - conda-forge
   - defaults

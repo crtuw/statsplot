@@ -15,7 +15,7 @@ class StatsDistSampleDashboard(object):
         self.statsSampleArtist = statsSampleArtist if statsSampleArtist is not None else StatsSampleArtist(ax = ax[1] if ax is not None else None)
 
     def set_stage(self):
-        _, ax = subplots(2,1)
+        _, ax = subplots(2,1, sharex=True)
         self.ax = ax
         return ax
         
@@ -27,4 +27,34 @@ class StatsDistSampleDashboard(object):
         self.statsSampleArtist.ax = ax[1]
         
         self.statsDistFunArtist.plot_distfun()
+        self.statsDistFunArtist.add_labels()
+
         self.statsSampleArtist.plot_sample()
+        self.statsDistFunArtist.add_labels()
+
+        self.symmetrize_lims()
+
+    def freeze_lims(self, lims):
+        ax = self.ax
+        for _ax in ax: _ax.set_xlim(lims)
+        
+    
+    def symmetrize_lims(self):
+        ax = self.ax
+        lims = ax[0].get_xlim()
+        mean = self.statsDistFunArtist.dist.mean()
+        
+        newlims = StatsDistSampleDashboard.get_symmetrized_lims(lims, mean)
+                    
+        for _ax in ax: _ax.set_xlim(newlims)
+        
+    
+    @staticmethod
+    def get_symmetrized_lims(lims, center):
+        dl = max(abs(x-center) for x in lims)
+        ll = center - dl
+        ul = center + dl
+        return [ll, ul]
+
+
+        
