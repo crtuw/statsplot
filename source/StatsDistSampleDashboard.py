@@ -1,7 +1,6 @@
 from matplotlib.pyplot import subplots, show
 from .StatsSampleArtist import StatsSampleArtist
 from .StatsDistFunArtist import StatsDistFunArtist
-import adjustText
 
 class StatsDistSampleDashboard(object):
 

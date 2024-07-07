@@ -3,7 +3,6 @@ from .StatsDistFunArtist import StatsDistFunArtist
 from .StatsSampleArtist import StatsSampleArtist
 from scipy.stats import norm
 
-
 def create_dist_sample_dashboard(loc:str, scale:str, n:str, dlim:str="", ctp:str=""):
 
     loc = float(loc)
