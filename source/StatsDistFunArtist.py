@@ -79,8 +79,6 @@ class StatsDistFunArtist(object):
         kwargs_fillstyle    = self.kwargs_fillstyle        
 
         label = self.label
-
-        print(kwargs_distfun2poly)
         
         # Calculate the polygon
         x, y = self.distfun2poly(**kwargs_distfun2poly)
