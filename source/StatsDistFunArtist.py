@@ -108,7 +108,7 @@ class StatsDistFunArtist(object):
         ax.vlines(x=mean, ymin=0., ymax=ymean, **DEFAULT_ANNOTATE_LINES)
         an = ax.annotate("Mean", (mean, 0.), **DEFAULT_ANNOTATE_ARROWLABEL)
         
-    def annotate_stdd(self):
+    def annotate_std(self):
         ax = self.ax if self.ax is not None else self.set_stage()
         distfun = self.distfun
 
@@ -136,7 +136,19 @@ class StatsDistFunArtist(object):
     
     def distfun2poly(self, **kwargs): return _distfun2poly(self.dist, self.distfun, **kwargs)
 
-       
+    def freeze_lims(self, lims):
+        ax = self.ax
+        ax.set_xlim(lims)
+        
+    def symmetrize_lims(self):
+        ax = self.ax
+        lims = ax[0].get_xlim()
+        mean = self.statsDistFunArtist.dist.mean()
+        
+        newlims = get_symmetrized_lims(lims, mean)
+                    
+        ax.set_xlim(newlims)
+            
 def _distfun2poly(dist,
                   distfun, 
                   *,
@@ -175,3 +187,12 @@ def _distfun2poly(dist,
     y = distfun(x)
     
     return x, y
+
+def get_symmetrized_lims(lims, center):
+    dl = max(abs(x-center) for x in lims)
+    ll = center - dl
+    ul = center + dl
+    return [ll, ul]
+
+
+        

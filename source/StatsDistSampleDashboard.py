@@ -1,6 +1,7 @@
 from matplotlib.pyplot import subplots, show
 from .StatsSampleArtist import StatsSampleArtist
 from .StatsDistFunArtist import StatsDistFunArtist
+import adjustText
 
 class StatsDistSampleDashboard(object):
 
@@ -31,7 +32,7 @@ class StatsDistSampleDashboard(object):
         self.statsDistFunArtist.plot_distfun()
         self.statsDistFunArtist.add_labels()
         self.statsDistFunArtist.annotate_mean()
-        self.statsDistFunArtist.annotate_stdd()
+        self.statsDistFunArtist.annotate_std()
 
         self.statsSampleArtist.plot_sample()
         self.statsSampleArtist.add_labels()
@@ -51,17 +52,16 @@ class StatsDistSampleDashboard(object):
         lims = ax[0].get_xlim()
         mean = self.statsDistFunArtist.dist.mean()
         
-        newlims = StatsDistSampleDashboard.get_symmetrized_lims(lims, mean)
+        newlims = get_symmetrized_lims(lims, mean)
                     
         for _ax in ax: _ax.set_xlim(newlims)
         
     
-    @staticmethod
-    def get_symmetrized_lims(lims, center):
-        dl = max(abs(x-center) for x in lims)
-        ll = center - dl
-        ul = center + dl
-        return [ll, ul]
+def get_symmetrized_lims(lims, center):
+    dl = max(abs(x-center) for x in lims)
+    ll = center - dl
+    ul = center + dl
+    return [ll, ul]
 
 
         
