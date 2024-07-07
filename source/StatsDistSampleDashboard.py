@@ -28,9 +28,11 @@ class StatsDistSampleDashboard(object):
         
         self.statsDistFunArtist.plot_distfun()
         self.statsDistFunArtist.add_labels()
+        self.statsDistFunArtist.annotate_mean()
+        self.statsDistFunArtist.annotate_stdd()
 
         self.statsSampleArtist.plot_sample()
-        self.statsDistFunArtist.add_labels()
+        self.statsSampleArtist.add_labels()
 
         self.symmetrize_lims()
 

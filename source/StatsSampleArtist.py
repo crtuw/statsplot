@@ -58,7 +58,7 @@ class StatsSampleArtist(object):
 
     def add_ylabel(self):
         ax = self.ax if self.ax is not None else self.set_stage()
-        ax.set_xlabel('Jitter')
+        ax.set_ylabel('Jitter')
 
 
     def add_legend(self):

@@ -4,8 +4,17 @@ from typing import Literal
 from seaborn import lineplot
 from scipy.stats import norm
 
-class StatsDistFunArtist(object):
 
+DEFAULT_ANNOTATE_LINES = {"color" : "black", "linewidth" : 0.5}
+DEFAULT_ANNOTATE_ARROWLABEL = {"xytext" : (1.,2.),                        \
+                               "textcoords" : 'offset fontsize',          \
+                               "arrowprops" : { "arrowstyle" : "->",      \
+                                                "linewidth" : 0.5,        \
+                                                "relpos" : (0.5, 0.0) } }
+DEFAULT_ANNOTATE_DIMENSIONLINE = { "arrowprops": {"arrowstyle": '<->', "linewidth" : 0.5} }            
+DEFAULT_ANNOTATE_DIMENSIONLINE_TEXT = {"xytext" : (0.,0.5), "textcoords" : 'offset fontsize', "ha": 'center'}
+
+class StatsDistFunArtist(object):
 
     distfunkind_to_ylabel = {"pdf": "Probability density",
                              "cdf": "Lower tail probability"}
@@ -35,7 +44,7 @@ class StatsDistFunArtist(object):
         self.dist = dist if dist is not None else norm()
         self.distfunkind = distfunkind
         
-        self.kwargs_distfun2poly  = kwargs_distfun2poly  if kwargs_distfun2poly  is not None else dict()
+        self.kwargs_distfun2poly  = kwargs_distfun2poly if kwargs_distfun2poly is not None else dict()
         self.kwargs_linestyle = kwargs_linestyle if kwargs_linestyle is not None else dict()
         self.kwargs_fillstyle = kwargs_fillstyle if kwargs_fillstyle is not None else dict()
 
@@ -67,9 +76,11 @@ class StatsDistFunArtist(object):
         kwargs_fillstyle    = self.kwargs_fillstyle        
 
         label = self.label
+
+        print(kwargs_distfun2poly)
         
         # Calculate the polygon
-        x, y = StatsDistFunArtist.distfun2poly(dist, distfunkind, **kwargs_distfun2poly)
+        x, y = self.distfun2poly(**kwargs_distfun2poly)
 
         # Plot
         lineplot(ax=ax, x=x, y=y, **kwargs_linestyle, label=label)
@@ -87,48 +98,79 @@ class StatsDistFunArtist(object):
         ax = self.ax if self.ax is not None else self.set_stage()
         distfunkind = self.distfunkind
         ax.set_ylabel(StatsDistFunArtist.distfunkind_to_ylabel[distfunkind])
-    
-    @staticmethod
-    def distfun2poly(dist,
-                     distfunkind: Literal["pdf","cdf"] = 'pdf', 
-                     *,
-                     ll: float = 0.05, 
-                     ul: float = 0.95,
-                     lref: Literal["lbtp", "lbvv"] = 'lbtp', 
-                     uref: Literal["ubtp", "ubvv"] = 'ubtp') -> [ndarray, ndarray]:
-        '''
-        Renders a distribution function.
+
+    def annotate_mean(self):
+        ax = self.ax if self.ax is not None else self.set_stage()
+        mean = self.dist.mean()
+        ymean = self.distfun(mean)
         
-            Parameters:
-                    dist ():            A distribution
-                    
-                    distfunkind (str):  Distribution function chosen from 
-                                             "pdf": The probability distribution function
-                                             "cdf": The cumulative distribution function
-                                        
-                    ll (float):         Lower limit (default = 0.05)
-                        
-                    ul (float):         Upper limit (default = 0.95)
-                        
-                    lref:               Lower reference (default = 'lbtp')
-                                              "lbtp": Lower bound from tail probability
-                                              "lbvv": Lower bound from (random) variable value
-                                              
-                    uref:               Upper reference (default = 'ubtp')
-                                              "ubtp": Upper bound from tail probability
-                                              "ubvv": Upper bound from (random) variable value
-                                          
-            Returns:
-                    x, y
-        '''
-    
-        xll = dist.ppf(ll) if lref == "lbtp" else ll
-        xul = dist.ppf(ul) if uref == "ubtp" else ul
-    
-        x = linspace(xll,xul,100)
+        ax.vlines(x=mean, ymin=0., ymax=ymean, **DEFAULT_ANNOTATE_LINES)
+        an = ax.annotate("Mean", (mean, 0.), **DEFAULT_ANNOTATE_ARROWLABEL)
+        
+    def annotate_stdd(self):
+        ax = self.ax if self.ax is not None else self.set_stage()
+        distfun = self.distfun
+
+        mean = self.dist.mean()
+        std = self.dist.std()
+        
+        xl, xu = (mean - std, mean + std)
+        yl, yu = (distfun(x) for x in (xl, xu))
+        y = (yl + yu) / 2
+
+        ax.annotate("", xy=(mean - std, y), xytext=(mean, y), **DEFAULT_ANNOTATE_DIMENSIONLINE)
+        ax.annotate("", xy=(mean + std, y), xytext=(mean, y), **DEFAULT_ANNOTATE_DIMENSIONLINE)
+        ax.annotate("Std. Dev.", xy=(mean - std / 2, y), **DEFAULT_ANNOTATE_DIMENSIONLINE_TEXT)
+        ax.annotate("Std. Dev.", xy=(mean + std / 2, y), **DEFAULT_ANNOTATE_DIMENSIONLINE_TEXT)
+        
+    @property
+    def distfun(self):
+        dist = self.dist
+        distfunkind = self.distfunkind
 
         if distfunkind == "pdf": distfun = dist.pdf
         if distfunkind == "cdf": distfun = dist.cdf
+        
+        return distfun
+    
+    def distfun2poly(self, **kwargs): return _distfun2poly(self.dist, self.distfun, **kwargs)
+
+       
+def _distfun2poly(dist,
+                  distfun, 
+                  *,
+                  ll: float = 0.05, 
+                  ul: float = 0.95,
+                  lref: Literal["lbtp", "lbvv"] = 'lbtp', 
+                  uref: Literal["ubtp", "ubvv"] = 'ubtp') -> [ndarray, ndarray]:
+    '''
+    Renders a distribution function.
+    
+        Parameters:
+                dist ():            A distribution
                 
-        y = distfun(x)
-        return x, y
+                distfun ():         Distribution function - see scipy.stats
+                                    
+                ll (float):         Lower limit (default = 0.05)
+                    
+                ul (float):         Upper limit (default = 0.95)
+                    
+                lref:               Lower reference (default = 'lbtp')
+                                          "lbtp": Lower bound from tail probability
+                                          "lbvv": Lower bound from (random) variable value
+                                          
+                uref:               Upper reference (default = 'ubtp')
+                                          "ubtp": Upper bound from tail probability
+                                          "ubvv": Upper bound from (random) variable value
+                                      
+        Returns:
+                x, y
+    '''
+
+    xll = dist.ppf(ll) if lref == "lbtp" else ll
+    xul = dist.ppf(ul) if uref == "ubtp" else ul
+
+    x = linspace(xll,xul,100)           
+    y = distfun(x)
+    
+    return x, y
