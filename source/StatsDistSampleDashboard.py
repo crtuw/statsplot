@@ -5,17 +5,19 @@ from .StatsDistFunArtist import StatsDistFunArtist
 class StatsDistSampleDashboard(object):
 
     def __init__(self,
+                 fig = None,
                  ax = None,
                  statsDistFunArtist = None,
                  statsSampleArtist = None):
-
+        self.fig = fig
         self.ax = ax
 
         self.statsDistFunArtist = statsDistFunArtist if statsDistFunArtist is not None else StatsDistFunArtist(ax = ax[0] if ax is not None else None)
         self.statsSampleArtist = statsSampleArtist if statsSampleArtist is not None else StatsSampleArtist(ax = ax[1] if ax is not None else None)
 
     def set_stage(self):
-        _, ax = subplots(2,1, sharex=True)
+        fig, ax = subplots(2,1, sharex=True)
+        self.fig = ax
         self.ax = ax
         return ax
         

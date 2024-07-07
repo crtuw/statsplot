@@ -22,6 +22,7 @@ class StatsDistFunArtist(object):
                             "cdf": "Cumulative distribution function"}
     
     def __init__(self,
+                 fig = None,
                  ax = None,
                  dist = None,
                  distfunkind: Literal["pdf","cdf"] = "pdf",
@@ -40,6 +41,7 @@ class StatsDistFunArtist(object):
                         kwargs_linestyle  (dict):     Arguments passed on to the lineplot - see seaborn.lineplot
                         kwargs_fillstyle  (dict):     Arguments passed on to the fill_between - see matplotlib.pyplot.fill_between
         '''
+        self.fig = fig
         self.ax = ax
         self.dist = dist if dist is not None else norm()
         self.distfunkind = distfunkind
@@ -52,7 +54,8 @@ class StatsDistFunArtist(object):
 
 
     def set_stage(self):
-        _, ax = subplots(1,1)
+        fig, ax = subplots(1,1)
+        self.fig = fig
         self.ax = ax
         return ax
     

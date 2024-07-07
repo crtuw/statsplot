@@ -7,6 +7,7 @@ from scipy.stats import norm
 class StatsSampleArtist(object):
     
     def __init__(self,
+                 fig = None,
                  ax = None,
                  sample = None,
                  kwargs_swarmplot: dict = None,
@@ -20,13 +21,15 @@ class StatsSampleArtist(object):
                         kwargs_swarmplot       (dict):     Parameters for plotting the distribution function - see plot_distfun
                         label                  (str):      A label for the sample
         '''
+        self.fig = fig
         self.ax = ax
         self.sample = sample if sample is not None else norm().rvs(10)
         self.kwargs_swarmplot = kwargs_swarmplot if kwargs_swarmplot is not None else dict()
         self.label = label if label is not None else "Sample"
 
     def set_stage(self):
-        _, ax = subplots(1,1)
+        fig, ax = subplots(1,1)
+        self.fig = fig
         self.ax = ax
         return ax
         
