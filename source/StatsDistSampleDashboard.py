@@ -17,7 +17,7 @@ class StatsDistSampleDashboard(object):
 
     def set_stage(self):
         fig, ax = subplots(2,1, sharex=True)
-        self.fig = ax
+        self.fig = fig
         self.ax = ax
         return ax
         
@@ -37,6 +37,9 @@ class StatsDistSampleDashboard(object):
         self.statsSampleArtist.add_labels()
 
         self.symmetrize_lims()
+        
+        ax[0].legend(loc="upper right")
+        ax[1].legend(loc="upper right")
 
     def freeze_lims(self, lims):
         ax = self.ax

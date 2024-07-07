@@ -18,8 +18,8 @@ class StatsDistFunArtist(object):
 
     distfunkind_to_ylabel = {"pdf": "Probability density",
                              "cdf": "Lower tail probability"}
-    distfunkind_to_label = {"pdf": "Probability density function",
-                            "cdf": "Cumulative distribution function"}
+    distfunkind_to_label = {"pdf": "PDF",
+                            "cdf": "CDF"}
     
     def __init__(self,
                  fig = None,
